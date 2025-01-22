@@ -10,7 +10,7 @@ from books import models
 def test_book_model():
     specific_date = timezone.datetime(2025, 1, 10).date()
     book = models.Book.objects.create(
-        title="a", description="abc", publication_data=specific_date
+        title="a", description="abc", publication_date=specific_date
     )
     assert book.title == "a"
     assert book.description == "abc"
@@ -34,19 +34,19 @@ def test_author_model():
     assert author.user.email == "author@email.com"
     assert author.user.username == "testuser"
     assert author.bio == "abc"
-    assert created_at
-    assert updated_at
+    assert author.created_at
+    assert author.updated_at
     assert str(author) == "John Doe"
 
 
 @pytest.mark.django_db
 def test_book_author_model():
     book = models.Book.objects.create(
-        title="a", description="abc", publication_data=timezone.now().date()
+        title="a", description="abc", publication_date=timezone.now().date()
     )
     user = get_user_model().objects.create(username="testuser", password="password123")
     author = models.Author.objects.create(user=user)
-    book_author = models.bookAuthor.objects.create(book=book, author=author)
+    book_author = models.BookAuthor.objects.create(book=book, author=author)
 
     assert book_author.book.id == book.id
     assert book_author.author.id == author.id
@@ -55,13 +55,13 @@ def test_book_author_model():
 @pytest.mark.django_db
 def test_book_author_unique_constraint():
     book = models.Book.objects.create(
-        title="a", description="abc", publication_data=timezone.now().date()
+        title="a", description="abc", publication_date=timezone.now().date()
     )
     user = get_user_model().objects.create(username="testuser", password="password123")
     author = models.Author.objects.create(user=user)
-    models.bookAuthor.objects.create(book=book, author=author)
+    models.BookAuthor.objects.create(book=book, author=author)
 
     with pytest.raises(Exception) as excinfo:
-        models.bookAuthor.objects.create(book=book, author=author)
+        models.BookAuthor.objects.create(book=book, author=author)
 
     assert "unique constraint" in str(excinfo)
