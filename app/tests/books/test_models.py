@@ -5,6 +5,8 @@ import pytest
 
 from books import models
 
+User = get_user_model()
+
 
 @pytest.mark.django_db
 def test_book_model():
@@ -22,7 +24,7 @@ def test_book_model():
 
 @pytest.mark.django_db
 def test_author_model():
-    user = get_user_model().objects.create(
+    user = User.objects.create(
         username="testuser",
         password="pass123",
         first_name="John",
@@ -44,12 +46,12 @@ def test_book_author_model():
     book = models.Book.objects.create(
         title="a", description="abc", publication_date=timezone.now().date()
     )
-    user = get_user_model().objects.create(username="testuser", password="password123")
+    user = User.objects.create(username="testuser", password="password123")
     author = models.Author.objects.create(user=user)
     book_author = models.BookAuthor.objects.create(book=book, author=author)
 
-    assert book_author.book.id == book.id
-    assert book_author.author.id == author.id
+    assert book_author.book_id == book.id
+    assert book_author.author_id == author.id
 
 
 @pytest.mark.django_db
@@ -57,7 +59,7 @@ def test_book_author_unique_constraint():
     book = models.Book.objects.create(
         title="a", description="abc", publication_date=timezone.now().date()
     )
-    user = get_user_model().objects.create(username="testuser", password="password123")
+    user = User.objects.create(username="testuser", password="password123")
     author = models.Author.objects.create(user=user)
     models.BookAuthor.objects.create(book=book, author=author)
 
