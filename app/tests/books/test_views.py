@@ -10,13 +10,13 @@ def test_add_book(client):
     books = Book.objects.all()
     assert len(books) == 0
 
-    url = reverse("books-list")
+    url = reverse("book-list")
     resp = client.post(
         url,
         {
             "title": "book title",
             "description": "a description",
-            "publication_date": "2020-20-20",
+            "publication_date": "2020-10-20",
         },
         content_type="application/json",
     )
@@ -28,6 +28,20 @@ def test_add_book(client):
 
 
 @pytest.mark.django_db
+def test_add_book_invalid_payload(client):
+    books = Book.objects.all()
+    assert len(books) == 0
+
+    url = reverse("book-list")
+    resp = client.post(url, {}, content_type="application/json")
+
+    assert resp.status_code == 400
+
+    books = Book.objects.all()
+    assert len(books) == 0
+
+
+@pytest.mark.django_db
 def test_add_author(client):
     user = get_user_model().objects.create_user(
         username="user", password="testpassword"
@@ -35,7 +49,7 @@ def test_add_author(client):
     authors = Author.objects.all()
     assert len(authors) == 0
 
-    url = reverse("authors-list")
+    url = reverse("author-list")
     resp = client.post(
         url,
         {
@@ -49,3 +63,17 @@ def test_add_author(client):
 
     authors = Author.objects.all()
     assert len(authors) == 1
+
+
+@pytest.mark.django_db
+def test_add_author_invalid_payload(client):
+    authors = Author.objects.all()
+    assert len(authors) == 0
+
+    url = reverse("author-list")
+    resp = client.post(url, {}, content_type="application/json")
+
+    assert resp.status_code == 400
+
+    authors = Author.objects.all()
+    assert len(authors) == 0
