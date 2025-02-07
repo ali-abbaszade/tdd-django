@@ -77,3 +77,44 @@ def test_add_author_invalid_payload(client):
 
     authors = Author.objects.all()
     assert len(authors) == 0
+
+
+@pytest.mark.django_db
+def test_get_single_book(client):
+    book = Book.objects.create(
+        title="a", description="abc", publication_date="2020-01-03"
+    )
+
+    url = reverse("book-detail", args=[book.id])
+    resp = client.get(url)
+
+    assert resp.status_code == 200
+    assert resp.data["title"] == "a"
+
+
+@pytest.mark.django_db
+def test_get_single_book_invalid_id(client):
+    resp = client.get("api/books/not-id/")
+
+    assert resp.status_code == 404
+
+
+@pytest.mark.django_db
+def test_get_single_author(client):
+    user = get_user_model().objects.create_user(
+        username="user", password="testpassword"
+    )
+    author = Author.objects.create(user=user)
+
+    url = reverse("author-detail", args=[author.id])
+    resp = client.get(url)
+
+    assert resp.status_code == 200
+    assert resp.data["user"] == user.id
+
+
+@pytest.mark.django_db
+def test_get_author_invalid_id(client):
+    resp = client.get("api/authors/not-id/")
+
+    assert resp.status_code == 404
