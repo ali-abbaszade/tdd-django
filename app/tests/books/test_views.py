@@ -7,6 +7,10 @@ from books.models import Book, Author
 
 @pytest.mark.django_db
 def test_add_book(client):
+    user = get_user_model().objects.create_user(
+        username="user", password="testpassword"
+    )
+    author = Author.objects.create(user=user)
     books = Book.objects.all()
     assert len(books) == 0
 
@@ -14,6 +18,7 @@ def test_add_book(client):
     resp = client.post(
         url,
         {
+            "authors": [{"author": author.id}],
             "title": "book title",
             "description": "a description",
             "publication_date": "2020-10-20",
