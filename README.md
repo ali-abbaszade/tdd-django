@@ -9,7 +9,7 @@ The application provides a basic example of how to structure a Django project wi
 *   Comprehensive unit tests
 *   Docker configuration
 *   Configured to use PostgreSQL
-*   
+ 
 ## Setup Instructions
 
 1.  **Clone the repository:**
