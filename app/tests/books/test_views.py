@@ -123,3 +123,35 @@ def test_get_author_invalid_id(client):
     resp = client.get("api/authors/not-id/")
 
     assert resp.status_code == 404
+
+
+@pytest.mark.django_db
+def test_get_all_books(client):
+    book_1 = Book.objects.create(title="Book 1", publication_date="2020-10-02")
+    book_2 = Book.objects.create(title="Book 2", publication_date="2021-11-03")
+
+    url = reverse("book-list")
+    resp = client.get(url)
+
+    assert resp.status_code == 200
+    assert resp.data[0]["title"] == book_1.title
+    assert resp.data[1]["title"] == book_2.title
+
+
+@pytest.mark.django_db
+def test_get_all_authors(client):
+    user_1 = get_user_model().objects.create_user(
+        username="user_one", password="testpassword"
+    )
+    user_2 = get_user_model().objects.create_user(
+        username="user_two", password="testpassword"
+    )
+    author_1 = Author.objects.create(user=user_1)
+    author_2 = Author.objects.create(user=user_2)
+
+    url = reverse("author-list")
+    resp = client.get(url)
+
+    assert resp.status_code == 200
+    assert resp.data[0]["user"] == user_1.id
+    assert resp.data[1]["user"] == user_2.id
